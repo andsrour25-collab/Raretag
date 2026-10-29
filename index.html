@@ -4,163 +4,270 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#0b0912">
-<title>RareTag | Username Scanner</title>
+<meta name="theme-color" content="#0c0d12">
+<title>RareTag | Scanner Dashboard</title>
 <style>
+:root{color-scheme:dark;--bg:#0c0d12;--panel:#12141b;--line:#272a35;--muted:#9298a9;--purple:#a78bfa;--green:#58d6a0}
 *{box-sizing:border-box}
-body{margin:0;background:#0b0912;color:#f8f5ff;font-family:system-ui,Arial,sans-serif}
-header{text-align:center;padding:35px 15px 22px}
-h1{font-size:36px;margin:0;font-weight:900;letter-spacing:-1px}
-h1 span{color:#b69aff}
-header p,.muted{color:#aaa4bc}
-main{max-width:850px;margin:auto;padding:10px 15px 40px}
-.panel{background:#15121f;border:1px solid #302841;border-radius:17px;padding:19px;margin-bottom:16px}
-h2{font-size:17px;margin:0 0 16px}
-label{display:block;font-size:13px;color:#c9c1db;margin-bottom:7px}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-select{width:100%;padding:12px;background:#0c0a13;border:1px solid #373047;color:white;border-radius:10px;font-size:14px}
-button{padding:12px;border:0;border-radius:10px;font-weight:750;cursor:pointer}
-.primary{width:100%;margin-top:16px;color:white;background:linear-gradient(100deg,#8156eb,#ba83ff)}
-.secondary{background:#282137;color:white;border:1px solid #393047}
-.actions{display:flex;gap:8px;margin:13px 0}
-.actions button{flex:1}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:15px}
-.stat{background:#0d0b14;border:1px solid #302841;border-radius:11px;padding:12px 5px;text-align:center}
-.stat strong{font-size:23px;display:block}
-.stat span{font-size:11px;color:#aaa4bc}
-.item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px;background:#0d0b14;border:1px solid #302841;border-radius:10px;margin-bottom:8px}
-.name{font-family:monospace;overflow-wrap:anywhere}
-.status{font-size:11px;color:#f6d36a;background:#30270f;border-radius:7px;padding:6px 8px;white-space:nowrap}
-.copy{background:#282137;color:white;padding:7px 9px}
-.right{display:flex;align-items:center;gap:7px}
-.empty{text-align:center;padding:25px 5px;color:#aaa4bc}
-.note{font-size:12px;line-height:1.7;color:#aaa4bc}
-@media(max-width:500px){.grid{grid-template-columns:1fr}.panel{padding:14px}.item{padding:9px}.name{font-size:13px}}
+body{margin:0;background:var(--bg);color:#f4f5fa;font:14px Inter,system-ui,Arial,sans-serif}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.app{display:flex;min-height:100vh}
+aside{width:220px;flex-shrink:0;border-right:1px solid var(--line);padding:23px 14px;background:#0f1016}
+.brand{font-size:25px;font-weight:900;padding:0 10px 30px;letter-spacing:-1px}
+.brand span{color:var(--purple)}
+.navtitle{font-size:10px;color:#73798b;letter-spacing:1.5px;padding:12px 10px}
+.nav{display:block;width:100%;text-align:left;padding:12px 11px;margin:3px 0;border:1px solid transparent;border-radius:9px;color:#b8bdcc;background:transparent}
+.nav.active{background:#252036;border-color:#39304e;color:#fff}
+.nav:hover{background:#1b1b27}
+.sidefoot{position:sticky;top:90vh;margin-top:45px;color:#73798b;font-size:11px;line-height:1.8;padding:10px}
+main{flex:1;min-width:0;padding:28px;max-width:1300px;margin:0 auto;width:100%}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:25px}
+h1{font-size:24px;margin:0 0 7px}
+.subtitle{font-size:13px;color:var(--muted)}
+.pill{border:1px solid #343744;background:#171921;color:#bdc2d1;border-radius:20px;padding:8px 11px;font-size:11px}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin-bottom:20px}
+.card,.panel{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:18px}
+.card small{color:var(--muted);font-size:12px}
+.card strong{display:block;font-size:27px;margin-top:11px}
+.card .desc{color:#73798b;font-size:11px;margin-top:5px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,.8fr);gap:16px;align-items:start}
+h2{font-size:15px;margin:0 0 17px}
+label{display:block;font-size:12px;color:#aeb3c3;margin-bottom:7px}
+input,select{width:100%;padding:11px;background:#0d0f15;color:#f4f5fa;border:1px solid #303341;border-radius:8px;outline:none}
+input:focus,select:focus{border-color:var(--purple)}
+.field{margin-bottom:15px}
+.btn{border:1px solid #363947;background:#20222c;color:#f1f2f8;border-radius:8px;padding:11px 13px}
+.btn.primary{background:#8b6be5;border-color:#8b6be5;color:white;font-weight:750}
+.btn.full{width:100%}
+.btnrow{display:flex;gap:8px}
+.btnrow>*{flex:1}
+.notice{border:1px solid #42391f;background:#211d14;color:#ddc88e;border-radius:9px;padding:11px;font-size:12px;line-height:1.6;margin-top:14px}
+.modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:18px}
+.mode{padding:11px 4px;text-align:center;border:1px solid #303341;background:#0e1016;color:#b8bdcc;border-radius:8px;font-size:12px}
+.mode.active{border-color:#9272e9;background:#29203b;color:white}
+.log{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:14px}
+.log h2{margin:0}
+#results{display:grid;gap:7px}
+.result{display:flex;align-items:center;justify-content:space-between;gap:9px;border:1px solid #292c37;background:#0e1016;border-radius:8px;padding:11px}
+.username{font-family:ui-monospace,monospace;font-size:14px;overflow-wrap:anywhere}
+.result-right{display:flex;gap:8px;align-items:center}
+.status{font-size:10px;border:1px solid #554728;color:#e8cb7c;background:#292216;border-radius:6px;padding:5px 7px;white-space:nowrap}
+.copy{background:#242631;color:white;border:1px solid #353846;border-radius:6px;padding:6px 8px;font-size:11px}
+.empty{text-align:center;padding:28px 5px;color:#858b9c;font-size:12px}
+.muted{color:var(--muted)}
+.bottomnote{font-size:11px;color:#7f8596;line-height:1.7;margin-top:16px}
+@media(max-width:850px){.layout{grid-template-columns:1fr}main{padding:20px 15px}.cards{gap:8px}.card{padding:13px}.card strong{font-size:23px}}
+@media(max-width:560px){.app{display:block}aside{width:100%;padding:13px;border-right:0;border-bottom:1px solid var(--line)}.brand{padding:5px 8px 13px;font-size:23px}.navtitle,.sidefoot{display:none}.navlist{display:flex;gap:6px;overflow-x:auto}.nav{white-space:nowrap;width:auto;padding:9px 11px;margin:0;font-size:12px}main{padding:19px 12px}.top{align-items:flex-start}.top h1{font-size:21px}.pill{font-size:10px}.card{padding:11px 8px}.card small{font-size:10px}.card strong{font-size:21px}.card .desc{font-size:10px}.panel{padding:14px}.modes{grid-template-columns:repeat(3,minmax(0,1fr))}}
 </style>
 </head>
 <body>
-<header>
-<h1>Rare<span>Tag</span></h1>
-<p>Username Generator &amp; Scanner</p>
-</header>
-<main>
-<section class="panel">
-<h2>⚙ Generator Settings</h2>
-<div class="grid">
-<div>
-<label for="length">Username length</label>
-<select id="length">
-<option value="3">3L</option>
-<option value="4" selected>4L</option>
-</select>
-</div>
-<div>
-<label for="type">Characters</label>
-<select id="type">
-<option value="letters">Letters only</option>
-<option value="numbers">Letters + numbers</option>
-<option value="symbols">Letters + . and _</option>
-<option value="all">All characters</option>
-</select>
-</div>
-<div>
-<label for="amount">Amount</label>
-<select id="amount">
-<option>10</option><option>25</option><option selected>50</option>
-<option>100</option><option>250</option><option>500</option>
-</select>
-</div>
-<div>
-<label for="filter">Filter</label>
-<select id="filter">
-<option value="all">All usernames</option>
-<option value="unknown">Unverified only</option>
-</select>
-</div>
-</div>
-<button class="primary" id="generate">✦ Generate &amp; Scan</button>
-<p class="note">Generation starts immediately. Availability scanning requires a verified checking service; this standalone version does not claim to check Discord.</p>
-</section>
+<div class="app">
+<aside>
+  <div class="brand">Rare<span>Tag</span><span style="color:#858b9c;font-size:10px;vertical-align:top;margin-left:6px">BETA</span></div>
+  <div class="navtitle">WORKSPACE</div>
+  <div class="navlist">
+    <button class="nav active" data-page="dashboard">▦ Dashboard</button>
+    <button class="nav" data-page="generator">✳ Generator</button>
+    <button class="nav" data-page="results">☷ Results</button>
+  </div>
+  <div class="navtitle">SCAN MODES</div>
+  <div class="navlist">
+    <button class="nav" data-mode="Check">⌕ Check</button>
+    <button class="nav" data-mode="Custom">⌘ Custom</button>
+    <button class="nav" data-mode="3L">3L Names</button>
+    <button class="nav" data-mode="4L">4L Names</button>
+    <button class="nav" data-mode="5L">5L Names</button>
+  </div>
+  <div class="sidefoot">RareTag Dashboard<br>Independent project<br>Availability checks not connected</div>
+</aside>
 
-<section class="panel">
-<div class="stats">
-<div class="stat"><strong id="total">0</strong><span>Generated</span></div>
-<div class="stat"><strong id="unknown">0</strong><span>Unverified</span></div>
-<div class="stat"><strong id="available">0</strong><span>Confirmed available</span></div>
-</div>
-<h2>⌁ Scan Results <span id="progress" class="muted" style="font-size:12px"></span></h2>
-<div class="actions">
-<button class="secondary" id="copyall">Copy all</button>
-<button class="secondary" id="copyunknown">Copy unverified</button>
-<button class="secondary" id="clear">Clear</button>
-</div>
-<div id="results"><div class="empty">Generate usernames to begin.</div></div>
-<p class="note">🟡 Unknown = not checked against Discord. This version does not yet have a live availability-checking endpoint, so it will not invent Available or Taken results.</p>
-</section>
+<main>
+  <div class="top">
+    <div>
+      <h1 id="pageTitle">Dashboard</h1>
+      <div class="subtitle">Username workspace / Scan and manage your list</div>
+    </div>
+    <span class="pill">● LOCAL MODE</span>
+  </div>
+
+  <div class="cards">
+    <div class="card"><small>Total generated</small><strong id="total">0</strong><div class="desc">Names created in this session</div></div>
+    <div class="card"><small>Awaiting verification</small><strong id="pending">0</strong><div class="desc">Not checked against Discord</div></div>
+    <div class="card"><small>Confirmed available</small><strong id="available">0</strong><div class="desc">Verified results only</div></div>
+  </div>
+
+  <div class="layout">
+    <section class="panel">
+      <h2>Scanner Configuration</h2>
+      <label>Scan mode</label>
+      <div class="modes">
+        <button class="mode" data-mode="Check">Check</button>
+        <button class="mode active" data-mode="4L">4L</button>
+        <button class="mode" data-mode="3L">3L</button>
+        <button class="mode" data-mode="5L">5L</button>
+        <button class="mode" data-mode="Custom">Custom</button>
+        <button class="mode" data-mode="Random">Random</button>
+      </div>
+
+      <div class="field">
+        <label for="custom">Username to check / custom list</label>
+        <input id="custom" placeholder="Enter a name or comma-separated list">
+      </div>
+      <div class="field">
+        <label for="length">Character length</label>
+        <select id="length">
+          <option value="3">3 characters (3L)</option>
+          <option value="4" selected>4 characters (4L)</option>
+          <option value="5">5 characters (5L)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="charset">Username format</label>
+        <select id="charset">
+          <option value="letters">Letters only (a-z)</option>
+          <option value="alnum">Letters and numbers</option>
+          <option value="all">Letters, numbers, . and _</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="amount">Names to generate</label>
+        <select id="amount">
+          <option value="10">10 names</option>
+          <option value="25">25 names</option>
+          <option value="50" selected>50 names</option>
+          <option value="100">100 names</option>
+          <option value="250">250 names</option>
+          <option value="500">500 names</option>
+        </select>
+      </div>
+      <button class="btn primary full" id="start">▶ Generate &amp; Scan</button>
+      <div class="notice">Availability service is not connected. Names generated here are marked Unknown, not falsely labeled Available or Taken.</div>
+    </section>
+
+    <section class="panel">
+      <div class="log">
+        <h2>Live Results</h2>
+        <span class="muted" id="count" style="font-size:11px">0 names</span>
+      </div>
+      <div class="btnrow" style="margin-bottom:14px">
+        <button class="btn" id="copyAll">Copy all</button>
+        <button class="btn" id="clear">Clear</button>
+      </div>
+      <div id="results"><div class="empty">Your results will appear here.<br>Choose a scan mode to begin.</div></div>
+      <div class="bottomnote">Result status: Unknown = no live availability check has been performed. The page does not claim to check Discord.</div>
+    </section>
+  </div>
 </main>
+</div>
+
 <script>
+(function(){
 const $=id=>document.getElementById(id);
+let mode="4L";
 let entries=[];
 
-function randomName(length,type){
- const letters="abcdefghijklmnopqrstuvwxyz";
- const digits="0123456789";
- const symbols="._";
- let chars=letters;
- if(type==="numbers")chars+=digits;
- if(type==="symbols")chars+=symbols;
- if(type==="all")chars+=digits+symbols;
- let s="";
- for(let i=0;i<length;i++)s+=chars[Math.floor(Math.random()*chars.length)];
- return s;
+function setMode(next){
+ mode=next;
+ document.querySelectorAll("[data-mode]").forEach(b=>{
+   b.classList.toggle("active",b.dataset.mode===mode);
+ });
+ if(["3L","4L","5L"].includes(mode)){
+   $("length").value=mode[0];
+ }
+ if(mode==="Check") $("custom").placeholder="Enter one username";
+ if(mode==="Custom") $("custom").placeholder="Enter names separated by commas";
+ if(["3L","4L","5L","Random"].includes(mode)) $("custom").placeholder="Optional: leave blank to generate names";
 }
 
-function generate(){
- const length=+$("length").value;
- const amount=+$("amount").value;
- const type=$("type").value;
- const set=new Set();
- while(set.size<amount)set.add(randomName(length,type));
- entries=[...set].map(name=>({name,status:"Unknown"}));
- $("progress").textContent="· No live checker connected";
+function randomName(length){
+ const letters="abcdefghijklmnopqrstuvwxyz";
+ const numbers="0123456789";
+ const symbols="._";
+ const choice=$("charset").value;
+ let chars=letters;
+ if(choice==="alnum")chars+=numbers;
+ if(choice==="all")chars+=numbers+symbols;
+ let out="";
+ for(let i=0;i<length;i++){
+   out+=chars[Math.floor(Math.random()*chars.length)];
+ }
+ return out;
+}
+
+function makeEntries(){
+ let names=[];
+ const raw=$("custom").value.trim();
+
+ if(mode==="Check" && raw){
+   names=[raw.replace(/^@/,"").toLowerCase()];
+ }else if(mode==="Custom" && raw){
+   names=raw.split(/[\s,;]+/).map(x=>x.replace(/^@/,"").toLowerCase()).filter(Boolean);
+ }else{
+   const len=mode==="3L"?3:mode==="4L"?4:mode==="5L"?5:Number($("length").value);
+   const target=Number($("amount").value);
+   const set=new Set();
+   while(set.size<target)set.add(randomName(len));
+   names=[...set];
+ }
+ entries=names.map(name=>({name,status:"Unknown"}));
  render();
 }
 
 function render(){
- const list=$("filter").value==="all"?entries:entries.filter(x=>x.status==="Unknown");
  $("total").textContent=entries.length;
- $("unknown").textContent=entries.filter(x=>x.status==="Unknown").length;
+ $("pending").textContent=entries.filter(x=>x.status==="Unknown").length;
  $("available").textContent=entries.filter(x=>x.status==="Available").length;
+ $("count").textContent=entries.length+" names";
  const root=$("results");
  root.replaceChildren();
- if(!list.length){root.innerHTML='<div class="empty">No results to display.</div>';return;}
- const frag=document.createDocumentFragment();
- for(const entry of list){
-  const row=document.createElement("div");row.className="item";
-  const name=document.createElement("span");name.className="name";name.textContent=entry.name;
-  const right=document.createElement("div");right.className="right";
-  const status=document.createElement("span");status.className="status";status.textContent=entry.status;
-  const btn=document.createElement("button");btn.className="copy";btn.textContent="Copy";
-  btn.onclick=()=>copy(entry.name);
-  right.append(status,btn);row.append(name,right);frag.append(row);
+ if(!entries.length){
+   root.innerHTML='<div class="empty">No results yet.<br>Choose a scan mode to begin.</div>';
+   return;
  }
+ const frag=document.createDocumentFragment();
+ entries.forEach(item=>{
+   const row=document.createElement("div");row.className="result";
+   const name=document.createElement("span");name.className="username";name.textContent=item.name;
+   const right=document.createElement("div");right.className="result-right";
+   const status=document.createElement("span");status.className="status";status.textContent=item.status;
+   const copy=document.createElement("button");copy.className="copy";copy.textContent="Copy";
+   copy.addEventListener("click",()=>copyText(item.name));
+   right.append(status,copy);row.append(name,right);frag.append(row);
+ });
  root.append(frag);
 }
 
-async function copy(text){
- try{await navigator.clipboard.writeText(text);$("progress").textContent="· Copied";}
- catch{
-  const area=document.createElement("textarea");area.value=text;document.body.append(area);area.select();
-  const ok=document.execCommand("copy");area.remove();$("progress").textContent=ok?"· Copied":"· Copy failed";
+async function copyText(text){
+ try{await navigator.clipboard.writeText(text);}
+ catch(e){
+   const area=document.createElement("textarea");
+   area.value=text;document.body.append(area);area.select();
+   document.execCommand("copy");area.remove();
  }
 }
-$("generate").onclick=generate;
-$("filter").onchange=render;
-$("copyall").onclick=()=>copy(entries.map(x=>x.name).join("\n"));
-$("copyunknown").onclick=()=>copy(entries.filter(x=>x.status==="Unknown").map(x=>x.name).join("\n"));
-$("clear").onclick=()=>{entries=[];$("progress").textContent="";render();};
+
+document.querySelectorAll("[data-mode]").forEach(b=>{
+ b.addEventListener("click",()=>setMode(b.dataset.mode));
+});
+document.querySelectorAll("[data-page]").forEach(b=>{
+ b.addEventListener("click",()=>{
+   document.querySelectorAll("[data-page]").forEach(x=>x.classList.toggle("active",x===b));
+   $("pageTitle").textContent=b.dataset.page==="dashboard"?"Dashboard":b.dataset.page==="generator"?"Generator":"Results";
+   if(b.dataset.page==="generator") $("custom").focus();
+   if(b.dataset.page==="results") $("results").scrollIntoView({behavior:"smooth",block:"start"});
+ });
+});
+$("start").addEventListener("click",makeEntries);
+$("copyAll").addEventListener("click",()=>copyText(entries.map(x=>x.name).join("\n")));
+$("clear").addEventListener("click",()=>{entries=[];render();});
+$("length").addEventListener("change",()=>{
+ if(mode==="3L"||mode==="4L"||mode==="5L")mode=$("length").value+"L";
+ setMode(mode);
+});
+setMode("4L");
 render();
+})();
 </script>
 </body>
-  </html>
-
+</html>
