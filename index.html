@@ -1,1 +1,166 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b0912">
+<title>RareTag | Username Scanner</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0b0912;color:#f8f5ff;font-family:system-ui,Arial,sans-serif}
+header{text-align:center;padding:35px 15px 22px}
+h1{font-size:36px;margin:0;font-weight:900;letter-spacing:-1px}
+h1 span{color:#b69aff}
+header p,.muted{color:#aaa4bc}
+main{max-width:850px;margin:auto;padding:10px 15px 40px}
+.panel{background:#15121f;border:1px solid #302841;border-radius:17px;padding:19px;margin-bottom:16px}
+h2{font-size:17px;margin:0 0 16px}
+label{display:block;font-size:13px;color:#c9c1db;margin-bottom:7px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+select{width:100%;padding:12px;background:#0c0a13;border:1px solid #373047;color:white;border-radius:10px;font-size:14px}
+button{padding:12px;border:0;border-radius:10px;font-weight:750;cursor:pointer}
+.primary{width:100%;margin-top:16px;color:white;background:linear-gradient(100deg,#8156eb,#ba83ff)}
+.secondary{background:#282137;color:white;border:1px solid #393047}
+.actions{display:flex;gap:8px;margin:13px 0}
+.actions button{flex:1}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:15px}
+.stat{background:#0d0b14;border:1px solid #302841;border-radius:11px;padding:12px 5px;text-align:center}
+.stat strong{font-size:23px;display:block}
+.stat span{font-size:11px;color:#aaa4bc}
+.item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px;background:#0d0b14;border:1px solid #302841;border-radius:10px;margin-bottom:8px}
+.name{font-family:monospace;overflow-wrap:anywhere}
+.status{font-size:11px;color:#f6d36a;background:#30270f;border-radius:7px;padding:6px 8px;white-space:nowrap}
+.copy{background:#282137;color:white;padding:7px 9px}
+.right{display:flex;align-items:center;gap:7px}
+.empty{text-align:center;padding:25px 5px;color:#aaa4bc}
+.note{font-size:12px;line-height:1.7;color:#aaa4bc}
+@media(max-width:500px){.grid{grid-template-columns:1fr}.panel{padding:14px}.item{padding:9px}.name{font-size:13px}}
+</style>
+</head>
+<body>
+<header>
+<h1>Rare<span>Tag</span></h1>
+<p>Username Generator &amp; Scanner</p>
+</header>
+<main>
+<section class="panel">
+<h2>⚙ Generator Settings</h2>
+<div class="grid">
+<div>
+<label for="length">Username length</label>
+<select id="length">
+<option value="3">3L</option>
+<option value="4" selected>4L</option>
+</select>
+</div>
+<div>
+<label for="type">Characters</label>
+<select id="type">
+<option value="letters">Letters only</option>
+<option value="numbers">Letters + numbers</option>
+<option value="symbols">Letters + . and _</option>
+<option value="all">All characters</option>
+</select>
+</div>
+<div>
+<label for="amount">Amount</label>
+<select id="amount">
+<option>10</option><option>25</option><option selected>50</option>
+<option>100</option><option>250</option><option>500</option>
+</select>
+</div>
+<div>
+<label for="filter">Filter</label>
+<select id="filter">
+<option value="all">All usernames</option>
+<option value="unknown">Unverified only</option>
+</select>
+</div>
+</div>
+<button class="primary" id="generate">✦ Generate &amp; Scan</button>
+<p class="note">Generation starts immediately. Availability scanning requires a verified checking service; this standalone version does not claim to check Discord.</p>
+</section>
+
+<section class="panel">
+<div class="stats">
+<div class="stat"><strong id="total">0</strong><span>Generated</span></div>
+<div class="stat"><strong id="unknown">0</strong><span>Unverified</span></div>
+<div class="stat"><strong id="available">0</strong><span>Confirmed available</span></div>
+</div>
+<h2>⌁ Scan Results <span id="progress" class="muted" style="font-size:12px"></span></h2>
+<div class="actions">
+<button class="secondary" id="copyall">Copy all</button>
+<button class="secondary" id="copyunknown">Copy unverified</button>
+<button class="secondary" id="clear">Clear</button>
+</div>
+<div id="results"><div class="empty">Generate usernames to begin.</div></div>
+<p class="note">🟡 Unknown = not checked against Discord. This version does not yet have a live availability-checking endpoint, so it will not invent Available or Taken results.</p>
+</section>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+let entries=[];
+
+function randomName(length,type){
+ const letters="abcdefghijklmnopqrstuvwxyz";
+ const digits="0123456789";
+ const symbols="._";
+ let chars=letters;
+ if(type==="numbers")chars+=digits;
+ if(type==="symbols")chars+=symbols;
+ if(type==="all")chars+=digits+symbols;
+ let s="";
+ for(let i=0;i<length;i++)s+=chars[Math.floor(Math.random()*chars.length)];
+ return s;
+}
+
+function generate(){
+ const length=+$("length").value;
+ const amount=+$("amount").value;
+ const type=$("type").value;
+ const set=new Set();
+ while(set.size<amount)set.add(randomName(length,type));
+ entries=[...set].map(name=>({name,status:"Unknown"}));
+ $("progress").textContent="· No live checker connected";
+ render();
+}
+
+function render(){
+ const list=$("filter").value==="all"?entries:entries.filter(x=>x.status==="Unknown");
+ $("total").textContent=entries.length;
+ $("unknown").textContent=entries.filter(x=>x.status==="Unknown").length;
+ $("available").textContent=entries.filter(x=>x.status==="Available").length;
+ const root=$("results");
+ root.replaceChildren();
+ if(!list.length){root.innerHTML='<div class="empty">No results to display.</div>';return;}
+ const frag=document.createDocumentFragment();
+ for(const entry of list){
+  const row=document.createElement("div");row.className="item";
+  const name=document.createElement("span");name.className="name";name.textContent=entry.name;
+  const right=document.createElement("div");right.className="right";
+  const status=document.createElement("span");status.className="status";status.textContent=entry.status;
+  const btn=document.createElement("button");btn.className="copy";btn.textContent="Copy";
+  btn.onclick=()=>copy(entry.name);
+  right.append(status,btn);row.append(name,right);frag.append(row);
+ }
+ root.append(frag);
+}
+
+async function copy(text){
+ try{await navigator.clipboard.writeText(text);$("progress").textContent="· Copied";}
+ catch{
+  const area=document.createElement("textarea");area.value=text;document.body.append(area);area.select();
+  const ok=document.execCommand("copy");area.remove();$("progress").textContent=ok?"· Copied":"· Copy failed";
+ }
+}
+$("generate").onclick=generate;
+$("filter").onchange=render;
+$("copyall").onclick=()=>copy(entries.map(x=>x.name).join("\n"));
+$("copyunknown").onclick=()=>copy(entries.filter(x=>x.status==="Unknown").map(x=>x.name).join("\n"));
+$("clear").onclick=()=>{entries=[];$("progress").textContent="";render();};
+render();
+</script>
+</body>
+  </html>
+
